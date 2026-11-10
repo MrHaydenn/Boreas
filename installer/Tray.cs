@@ -23,7 +23,7 @@ internal static class Tray
             { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = root });
             Action open = () => Process.Start(new ProcessStartInfo(address) { UseShellExecute = true });
             var menu = new ContextMenuStrip();
-            using (var icon = new NotifyIcon { Icon = System.Drawing.SystemIcons.Application, Text = "Boreas", ContextMenuStrip = menu, Visible = true })
+            using (var icon = new NotifyIcon { Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath), Text = "Boreas", ContextMenuStrip = menu, Visible = true })
             using (var startup = new Timer { Interval = 750 })
             {
                 menu.Items.Add("Open Boreas", null, (sender, e) => open());

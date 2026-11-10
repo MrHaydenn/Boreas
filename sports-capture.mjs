@@ -22,7 +22,7 @@ function recordingTeams(title){
   return {name,abbrev:nhl||nfl?.toUpperCase()||name.split(/\s+/).map(word=>word[0]).join('').slice(0,3),logo};
  });
 }
-export function createSportsCapture({authorize,directory=process.cwd(),fetcher=fetch,applyService=applyCaptureService,enabled=()=>true}={}){
+export function createSportsCapture({authorize,directory=process.cwd(),program=directory,fetcher=fetch,applyService=applyCaptureService,enabled=()=>true}={}){
  const configFile=path.join(directory,'sports-capture.local.json'),tickets=new Map(),exports=new Map();let writing=Promise.resolve(),applying=false,activity=[],activityAt=0;
  async function config(){try{return JSON.parse(await readFile(configFile,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;return {};}}
  function update(change){writing=writing.catch(()=>{}).then(async()=>{const c=await config();change(c);await writeFile(configFile+'.tmp',JSON.stringify(c,null,2));await rename(configFile+'.tmp',configFile);});return writing;}
@@ -49,13 +49,13 @@ export function createSportsCapture({authorize,directory=process.cwd(),fetcher=f
    const apply=input.apply===true;applying=apply;
    try{let restart=apply&&(settings.temporaryDirectory!==previous.temporaryDirectory||settings.encoder!==previous.encoder||settings.maxConcurrent!==previous.maxConcurrent);if(apply){let active=[],status;try{active=(await workerJSON('/jobs')).jobs;status=await workerJSON('/status');}catch{restart=true;}if(status&&status.temporaryDirectory!==undefined)restart||=status.temporaryDirectory!==settings.temporaryDirectory||status.encoderPreference!==settings.encoder||status.maxConcurrent!==settings.maxConcurrent;if(restart&&active.some(j=>!['complete','failed'].includes(j.state)))return send(409,{error:'Finish or stop the active captures before saving changes that restart the shared recorder.'});}
     for(const folder of [settings.recordingsDirectory,settings.temporaryDirectory]){await mkdir(folder,{recursive:true});const probe=path.join(folder,'.lumen-write-'+randomBytes(8).toString('hex'));await writeFile(probe,'',{flag:'wx'});await unlink(probe);}
-    await update(c=>Object.assign(c,settings));if(restart){try{await Promise.allSettled([...exports.values()]);await writing;await applyService(directory);}catch(e){await update(c=>Object.assign(c,previous));throw e;}}return send(200,{...settings,applied:apply});
+    await update(c=>Object.assign(c,settings));if(restart){try{await Promise.allSettled([...exports.values()]);await writing;await applyService(program);}catch(e){await update(c=>Object.assign(c,previous));throw e;}}return send(200,{...settings,applied:apply});
    }finally{if(apply)applying=false;}
   }
   if(route==='/settings/apply'&&req.method==='POST'){
    if(applying)return send(409,{error:'Capture settings are already being applied.'});
    applying=true;
-   try{const data=await workerJSON('/jobs');if(data.jobs.some(j=>!['complete','failed'].includes(j.state)))return send(409,{error:'Finish or stop the active capture before applying settings.'});await Promise.allSettled([...exports.values()]);await writing;await applyService(directory);return send(200,{message:'Capture settings applied.'});}finally{applying=false;}
+   try{const data=await workerJSON('/jobs');if(data.jobs.some(j=>!['complete','failed'].includes(j.state)))return send(409,{error:'Finish or stop the active capture before applying settings.'});await Promise.allSettled([...exports.values()]);await writing;await applyService(program);return send(200,{message:'Capture settings applied.'});}finally{applying=false;}
   }
   if(route==='/schedule'&&req.method==='POST')return send(200,await queue.add(await readBody(req)));
   if(route==='/jobs'&&req.method==='GET'){const saved=await savedRecordings(),data=await workerJSON('/jobs').catch(error=>{if(!saved.length)throw error;return {jobs:[]};});data.jobs.push(...await queue.list());for(const job of data.jobs)if(job.state==='complete')void exportJob(job)?.catch(()=>{});const combined=new Map(data.jobs.map(j=>[j.id,j]));for(const {filename,...job} of saved)combined.set(job.id,job);return send(200,{...data,jobs:[...combined.values()].map(job=>({...job,teams:recordingTeams(job.title),canDelete:req.lumenPermissions?.deleteMedia===true}))});}

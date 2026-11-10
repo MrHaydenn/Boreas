@@ -9,15 +9,16 @@ function DockerCommand([string[]]$Arguments){
  if($LASTEXITCODE -ne 0){throw 'Docker operation failed. Check that Docker Desktop is running.'}
  return $result
 }
-$configPath=Join-Path $projectRoot 'sports-capture.local.json'
+$runtime=if($env:BOREAS_RUNTIME){$env:BOREAS_RUNTIME}else{$projectRoot}
+$configPath=Join-Path $runtime 'sports-capture.local.json'
 $settings=@{}
 if(Test-Path -LiteralPath $configPath){
  $json=Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
  foreach($property in $json.PSObject.Properties){$settings[$property.Name]=$property.Value}
 }
 if(-not $settings.token){$bytes=New-Object byte[] 32;$rng=[Security.Cryptography.RandomNumberGenerator]::Create();$rng.GetBytes($bytes);$rng.Dispose();$settings.token=([BitConverter]::ToString($bytes)).Replace('-','').ToLowerInvariant()}
-if(-not $settings.recordingsDirectory){$settings.recordingsDirectory=Join-Path $projectRoot 'Sports recordings'}
-if(-not $settings.temporaryDirectory){$settings.temporaryDirectory=Join-Path $projectRoot 'Sports temporary'}
+if(-not $settings.recordingsDirectory){$settings.recordingsDirectory=Join-Path $runtime 'Sports recordings'}
+if(-not $settings.temporaryDirectory){$settings.temporaryDirectory=Join-Path $runtime 'Sports temporary'}
 if(-not $settings.maxConcurrent){$settings.maxConcurrent=3}
 if($settings.maxConcurrent -notin @(1,2,3,4)){throw 'Capture limit must be between 1 and 4.'}
 if(-not $settings.encoder){$settings.encoder='auto'}

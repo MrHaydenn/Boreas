@@ -44,7 +44,7 @@ export async function createApplication({directory=here,dataDirectory=path.join(
  const checkUpdates=await createUpdateCheck(directory);
  const serverPublicOrigin=()=>serverPreferences.get().publicOrigin;
  const appAvailable=name=>serverPreferences.get()[name]===true;
- const sports=createSportsHandler({authorize:async()=>true,fetcher:sportsFetcher}),capture=createSportsCapture({directory:sportsDirectory,fetcher:sportsFetcher,authorize:async()=>true,enabled:()=>appAvailable('sports')});
+ const sports=createSportsHandler({authorize:async()=>true,fetcher:sportsFetcher}),capture=createSportsCapture({directory:sportsDirectory,program:directory,fetcher:sportsFetcher,authorize:async()=>true,enabled:()=>appAvailable('sports')});
  function local(req){const address=String(req.socket.remoteAddress||'').replace(/^::ffff:/,'');return ['127.0.0.1','::1'].includes(address)||ips.has(address);}
  const discover=createDiscover(metadata,libraries);
  const connections=createNativeConnections(dataDirectory,libraries);
@@ -317,10 +317,10 @@ export async function createApplication({directory=here,dataDirectory=path.join(
  return {server,videoThumbnails,accounts,libraries,metadata,progress,languages,tracks,titleArtwork,transcoding,ratings,transcoderSettings,libraryWatcher};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
- try{await stat(path.join(here,'.storage-move.lock'));throw Error('Data move is in progress.');}catch(e){if(e.code!=='ENOENT')throw e;}
- const config=JSON.parse(await readFile(path.join(here,'boreas.config.json'),'utf8').catch(error=>{if(error.code!=='ENOENT')throw error;return readFile(path.join(here,'lumen-native.config.json'),'utf8');}));
+ try{await stat(path.join(process.env.BOREAS_RUNTIME||here,'.storage-move.lock'));throw Error('Data move is in progress.');}catch(e){if(e.code!=='ENOENT')throw e;}
+ const config=JSON.parse(await readFile(path.join(process.env.BOREAS_RUNTIME||here,'boreas.config.json'),'utf8').catch(error=>{if(error.code!=='ENOENT')throw error;return readFile(path.join(here,'lumen-native.config.json'),'utf8');}));
  const port=Number(process.env.LUMEN_NATIVE_PORT||config.port||5180),host=process.env.LUMEN_NATIVE_HOST||config.host||'0.0.0.0';if(!Number.isInteger(port)||port<1024||port>65535)throw Error('Choose a port from 1024 to 65535.');
- const {server,libraries,metadata}=await createApplication({enableMediaAnalysis:true,publicOrigin:config.publicOrigin||'',appDefaults:config.apps,dataDirectory:path.resolve(here,config.dataDirectory||'data'),sportsDirectory:here});
+ const {server,libraries,metadata}=await createApplication({enableMediaAnalysis:true,publicOrigin:config.publicOrigin||'',appDefaults:config.apps,dataDirectory:path.resolve(here,config.dataDirectory||'data'),sportsDirectory:process.env.BOREAS_RUNTIME||here});
  if(process.env.LUMEN_NATIVE_REFRESH_ANIME==='1'&&metadata.status().configured)for(const library of libraries.list(true).filter(l=>l.type==='anime'))libraries.startScan(library.id);
  if(process.env.LUMEN_NATIVE_REFRESH_TV==='1'&&metadata.status().configured)for(const library of libraries.list(true).filter(l=>['shows','anime'].includes(l.type)))libraries.startScan(library.id);
  if(process.env.LUMEN_NATIVE_REFRESH_MOVIES==='1'&&metadata.status().configured)for(const library of libraries.list(true).filter(l=>l.type==='movies'))libraries.startScan(library.id);

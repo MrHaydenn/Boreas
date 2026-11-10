@@ -13,7 +13,7 @@ const contains=(parent,child)=>{
 };
 
 export function createStorageMove(program,data,enabled){
-  const work=path.join(program,'work'),job=path.join(work,'storage-move.json'),lock=job+'.lock';
+  const work=path.join(process.env.BOREAS_RUNTIME||program,'work'),job=path.join(work,'storage-move.json'),lock=job+'.lock';
   async function status(){
     try{return JSON.parse(await readFile(job,'utf8'));}
     catch{return null;}
@@ -51,7 +51,7 @@ export function createStorageMove(program,data,enabled){
 }
 
 async function move(program,destination){
-  const job=path.join(program,'work','storage-move.json');
+  const job=path.join(process.env.BOREAS_RUNTIME||program,'work','storage-move.json');
   const powershell=path.join(process.env.SystemRoot||'C:/Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
   const launcher=['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',path.join(program,'Start-Boreas.ps1')];
   const options={cwd:program,windowsHide:true};

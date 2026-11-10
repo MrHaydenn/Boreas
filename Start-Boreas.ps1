@@ -1,11 +1,16 @@
 param([switch]$Stop)
 $ErrorActionPreference='Stop'
 $lumenNativeRoot=$PSScriptRoot
-$configFile=Join-Path $lumenNativeRoot 'boreas.config.json'
+$runtime=$lumenNativeRoot
+if(Test-Path -LiteralPath (Join-Path $lumenNativeRoot 'boreas-installed')){
+ $runtime=Join-Path $env:LOCALAPPDATA 'Boreas'
+ $env:BOREAS_RUNTIME=$runtime
+}
+$configFile=Join-Path $runtime 'boreas.config.json'
 if(-not(Test-Path -LiteralPath $configFile)){$configFile=Join-Path $lumenNativeRoot 'lumen-native.config.json'}
 $config=Get-Content -LiteralPath $configFile -Raw | ConvertFrom-Json
 $port=[int]$config.port
-$pidFile=Join-Path $lumenNativeRoot 'work\server-process.json'
+$pidFile=Join-Path $runtime 'work\server-process.json'
 if($Stop){
  if(-not(Test-Path -LiteralPath $pidFile)){Write-Output 'No Boreas launcher record was found.';exit}
  $saved=Get-Content -LiteralPath $pidFile -Raw | ConvertFrom-Json
@@ -32,7 +37,7 @@ if(-not $env:LUMEN_NATIVE_FFPROBE){
  $ffprobe=Get-Command ffprobe.exe -ErrorAction SilentlyContinue
  if($ffprobe){$env:LUMEN_NATIVE_FFPROBE=$ffprobe.Source}
 }
-$logDirectory=Join-Path $lumenNativeRoot 'work\logs'
+$logDirectory=Join-Path $runtime 'work\logs'
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 $stamp=Get-Date -Format 'yyyyMMdd-HHmmss-fff'
 $process=Start-Process -FilePath $node -ArgumentList ('"'+(Join-Path $lumenNativeRoot 'server.mjs')+'"') -WorkingDirectory $lumenNativeRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $logDirectory "$stamp-out.log") -RedirectStandardError (Join-Path $logDirectory "$stamp-error.log") -PassThru
