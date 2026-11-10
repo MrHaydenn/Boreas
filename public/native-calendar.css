@@ -1,0 +1,24 @@
+.native-calendar-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.native-calendar-toolbar strong{margin-left:6px}
+.native-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(145px,1fr));gap:8px;overflow-x:auto}
+.native-calendar-day{background:#171b26b0;border:1px solid #b9c4e22e;border-radius:10px;padding:10px;min-height:140px}
+.native-calendar-day h2{font-size:.9rem;margin:0 0 10px}
+.native-calendar-event{display:flex;gap:8px;padding:6px;margin:0 0 7px;border-radius:7px;background:#27304795;color:inherit;text-decoration:none;align-items:center}
+a.native-calendar-event:hover{background:#435377aa}
+.native-calendar-event img{width:30px;aspect-ratio:2/3;object-fit:cover;border-radius:3px}
+.native-calendar-event strong,.native-calendar-event small{display:block;overflow-wrap:anywhere}
+.native-calendar-event small{color:#c7cce0;margin-top:3px}
+.native-connection-form{display:grid;gap:10px;margin-bottom:12px}
+.native-connection-form label{display:grid;gap:4px}
+.native-calendar-toolbar button{
+  min-width:32px;
+  padding:6px 10px;
+  border:1px solid #b9c4e238;
+  border-radius:8px;
+  background:#20283970;
+  color:#e2e6f5;
+}
+.native-calendar-toolbar button:hover,.native-calendar-toolbar button:focus-visible{
+  border-color:#a5aaff9c;
+  background:#7d8cf444;
+}

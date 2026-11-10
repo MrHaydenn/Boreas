@@ -1,0 +1,8 @@
+import http from 'node:http';
+import net from 'node:net';
+import {resolve4} from 'node:dns/promises';
+import {publicIPv4} from './policy.mjs';
+// Pin the validated IP to the socket, rather than resolving a second time.
+async function address(host){const ips=await resolve4(host);if(!ips.length||ips.some(ip=>!publicIPv4(ip)))throw Error('Private destinations are blocked');return ips[0];}
+export function startProxy(){const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url);if(u.protocol!=='http:'||u.username||u.password||u.port&&u.port!=='80')throw Error();const ip=await address(u.hostname);const headers={...req.headers,host:u.host};delete headers['proxy-authorization'];const upstream=http.request({host:ip,port:80,path:u.pathname+u.search,method:req.method,headers},r=>{res.writeHead(r.statusCode,r.headers);r.pipe(res);});upstream.setTimeout(20000,()=>upstream.destroy());upstream.on('error',()=>res.destroy());req.pipe(upstream);}catch{res.writeHead(403).end();}});
+ server.on('connect',async(req,socket,head)=>{try{const u=new URL('https://'+req.url);if(u.port&&u.port!=='443'||u.username||u.password)throw Error();const ip=await address(u.hostname),upstream=net.connect(443,ip,()=>{socket.write('HTTP/1.1 200 Connection Established\r\n\r\n');if(head.length)upstream.write(head);socket.pipe(upstream);upstream.pipe(socket);});upstream.on('error',()=>socket.destroy());socket.on('error',()=>upstream.destroy());socket.on('close',()=>upstream.destroy());}catch{socket.end('HTTP/1.1 403 Forbidden\r\n\r\n');}});return new Promise(resolve=>server.listen(8899,'127.0.0.1',resolve));}

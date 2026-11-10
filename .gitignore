@@ -1,0 +1,8 @@
+/data/
+/work/
+/installer/dist/
+/boreas.config.json
+/lumen-native.config.json
+*.local.json
+*.log
+node_modules/

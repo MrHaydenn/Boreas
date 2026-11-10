@@ -1,0 +1,98 @@
+
+/* Boreas shell. Artwork and sports team colors remain content accents. */
+:root{
+ --gold:#a4def6;--accent-blue:#a4def6;--accent-purple:#e8f8ff;
+ --accent-metal:linear-gradient(118deg,#a2d7eb,#f6fcff 47%,#b6e7fa 76%,#83bdd7);
+ --focus-fill:linear-gradient(115deg,#a4def626,#f1fbff12);
+}
+body{--web-glass:rgba(13,17,20,.84);color:#f3f6f8}
+body[data-web-theme=gray]{--web-glass:rgba(31,34,37,.88)}
+body.native-app .native-welcome{background:radial-gradient(ellipse at 20% 38%,#213945 0,transparent 54%),#080a0c}
+body.native-app .native-intro{color:#f3f6f8}
+body.native-app :is(.native-auth,.native-panel,.native-item-menu,.native-library-dialog,.native-server-nav,.profile-menu,dialog){background:linear-gradient(145deg,#1c2329f5,#101215f5)!important;border-color:#a8d8ee36!important}
+body.native-app #app .top-attached-tabs,body.native-app #app>aside{
+ background:linear-gradient(140deg,#171c21ee,#0c0f12e8);border-color:#a4def629
+}
+body.native-app :is(.primary,.title-actions .primary){background:var(--accent-metal)!important;color:#101820!important;border-color:#d2f4ff75;box-shadow:0 4px 18px #8dc7e22a}
+body.native-app :is(.tabs a,.tabs button,.nav-item a,.card,.episode-image):focus-visible{outline:2px solid #a4def6;outline-offset:2px}
+body.native-app :is(input,select):focus-visible{outline-color:#a4def6!important;border-color:#a4def6!important}
+body.native-app .player-page{--gold:#a4def6}
+body.native-app #seek{accent-color:#a4def6}
+body.native-app .player-page button:focus-visible{outline-color:#a4def6}
+body.native-app .watched{color:#101820!important;text-shadow:none}
+body.native-app .native-top-back:focus-visible{border-color:#a4def6}
+
+.boreas-storm,.player-loading{
+ background:radial-gradient(ellipse at 35% 54%,#638ba4a6,#273b49b8 48%,#0a1017c7 100%);
+ isolation:isolate;overflow:hidden
+}
+.boreas-storm{
+ position:fixed;inset:0;z-index:200;display:grid;place-items:center;pointer-events:none;
+ opacity:0;visibility:hidden;transition:opacity .32s ease,visibility 0s linear .32s
+}
+.boreas-storm.is-loading{opacity:1;visibility:visible;transition-delay:0s}
+.boreas-storm::before,.boreas-storm::after,.player-loading::before,.player-loading::after{
+ content:"";position:absolute;inset:-30%;pointer-events:none;z-index:-1;
+ background-image:radial-gradient(circle at 13% 20%,#f6fcffda 0 1px,transparent 2px),
+ radial-gradient(circle at 61% 42%,#cbefffdd 0 1.5px,transparent 3px),
+ radial-gradient(ellipse at 83% 79%,#f6fcffd0 0 2px,transparent 4px);
+ background-size:67px 91px,111px 67px,157px 119px;
+}
+.boreas-storm::after,.player-loading::after{
+ opacity:.44;background-size:110px 97px,160px 133px,225px 171px;
+ 
+}
+.player-loading{opacity:1;visibility:visible;transition:opacity .28s ease,visibility 0s}
+.player-loading[hidden]{display:grid!important;opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .28s}
+@media(prefers-reduced-motion:reduce){
+ .boreas-storm,.player-loading,.player-loading[hidden]{transition:none}
+}
+body.reduce-motion :is(.boreas-storm,.player-loading){transition:none}
+
+.boreas-loading-mark{
+ position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);
+ width:clamp(104px,13vw,172px);aspect-ratio:1;
+ background:url('/branding/lumen-wolf.png') center/contain no-repeat
+}
+.boreas-loading-mark::after{
+ content:"";position:absolute;inset:0;opacity:.08;transition:opacity .32s ease;
+ background:radial-gradient(circle closest-side at 39.1% 46.6%,#e9fdff 0,#9fe9ff 4%,#22bcff50 10%,transparent 17%),
+ radial-gradient(circle closest-side at 58.9% 46.6%,#e9fdff 0,#9fe9ff 4%,#22bcff50 10%,transparent 17%)
+}
+.boreas-storm.is-loading .boreas-loading-mark::after,.player-loading:not([hidden]) .boreas-loading-mark::after{
+ opacity:.96;transition-duration:3s;transition-timing-function:ease-out
+}
+@media(prefers-reduced-motion:reduce){
+ .boreas-storm.is-loading .boreas-loading-mark::after,.player-loading:not([hidden]) .boreas-loading-mark::after{transition:none;opacity:.55}
+}
+body.reduce-motion .boreas-loading-mark::after{transition:none!important;opacity:.55}
+
+.native-analysis-library{margin:16px 0}
+.native-analysis-library>div{display:flex;justify-content:space-between;gap:12px}
+.native-analysis-library progress{width:100%;height:12px;accent-color:#a4def6}
+body.native-app .native-welcome{max-width:none;position:relative;isolation:isolate;overflow:hidden;padding:clamp(24px,6vw,100px);grid-template-columns:minmax(0,1fr) minmax(280px,480px);gap:clamp(28px,8vw,150px);justify-content:center;background:radial-gradient(ellipse at 26% 38%,#294b61 0,#152833 39%,#080e15 81%)}
+.native-welcome::before,.native-welcome::after{content:"";position:absolute;inset:-30%;z-index:-1;pointer-events:none;background-image:radial-gradient(ellipse at 12% 26%,#fff9 0 1px,transparent 3px),radial-gradient(circle at 63% 54%,#cbeeffa0 0 2px,transparent 4px),radial-gradient(circle at 86% 83%,#effaff75 0 1px,transparent 2px);background-size:107px 88px,197px 151px,77px 125px;animation:boreas-signin-snow 32s linear infinite}
+.native-welcome::after{opacity:.36;filter:blur(2px);animation-duration:52s;animation-direction:reverse}
+@keyframes boreas-signin-snow{to{background-position:214px 88px,197px 151px,154px 125px}}
+.native-welcome .native-intro{text-align:center}
+.native-welcome .native-intro>img{width:min(100%,360px);height:auto;margin:0;filter:drop-shadow(0 12px 30px #061017)}
+.native-welcome .native-intro h1{font-size:clamp(44px,8vw,118px);font-weight:900;letter-spacing:.09em;text-transform:uppercase;margin:0;background:linear-gradient(#fff 42%,#9cddff 90%);background-clip:text;color:transparent}
+.native-welcome .native-auth{background:transparent;backdrop-filter:none;box-shadow:none;border-color:transparent}
+@media(min-width:701px){.native-welcome .native-auth{transform:translateX(clamp(-112px,-6vw,-42px))}}
+.native-welcome .form-error:empty{display:none}
+@media(max-width:700px){body.native-app .native-welcome{grid-template-columns:minmax(0,460px);align-content:center}.native-welcome .native-intro>img{width:150px}}
+@media(prefers-reduced-motion:reduce){.native-welcome::before,.native-welcome::after{animation:none}}
+body.reduce-motion .native-welcome::before,body.reduce-motion .native-welcome::after{animation:none}
+
+.native-welcome #auth-form input{background:#0b16234d;border-color:#d3efff50;color:#fff}
+.native-welcome #auth-form .primary{background:linear-gradient(110deg,#0d536981,#14324699);border-color:#b0e5ff63}
+body.native-app #app>aside .sidebar-tools{display:grid;gap:4px;margin-bottom:4px}
+body.native-app #app>aside :is(.sidebar-profile,.searchbox,#nav .nav-item a,#nav .nav-more-button){min-height:42px}
+body.native-app #app>aside #account{width:32px;height:32px;border-radius:6px;padding:0;overflow:hidden}
+body.native-app #app>aside #account img{border-radius:0}
+body.native-app #app>aside #nav :is(.nav-item a,.nav-more-button){border-radius:6px}
+body.native-app #app>aside #nav .nav-item a.active{background:linear-gradient(90deg,#254b774f,#26355457)}
+body.native-app #app>aside #nav :is(.nav-item a,.nav-more-button):is(:focus-visible,:hover,[aria-expanded=true]){background:#283f5366;outline:2px solid #a4def6;outline-offset:-2px;color:#f0fbff}
+body.native-app #app>aside.native-more-open{overflow:visible}
+body.native-app #app>aside #nav .native-extra-libraries{position:absolute;left:100%;top:0;width:min(248px,calc(100vw - 230px));max-height:75dvh;overflow:auto;padding:12px;border:1px solid #c0ebff33;border-radius:0 14px 14px 0;background:#101922f5;box-shadow:8px 12px 24px #0007}
+.native-extra-libraries h2{margin:6px 8px 10px;font-size:15px}
